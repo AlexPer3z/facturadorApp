@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard de Facturas</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
+    table { border-collapse: collapse; width: 100%; background: white; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background-color: #444; color: white; }
+    tr:nth-child(even) { background-color: #f2f2f2; }
+    a { color: #007BFF; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>📄 Facturas Generadas</h1>
+
+  <form method="get" style="margin-bottom: 20px;">
+    <input type="text" name="q" placeholder="Buscar por cliente o detalle" value="{{ request.args.q or '' }}">
+    <input type="date" name="start" value="{{ request.args.start or '' }}">
+    <input type="date" name="end" value="{{ request.args.end or '' }}">
+    <button type="submit">Filtrar</button>
+    <a href="/dashboard/export" style="margin-left: 20px;">📤 Exportar a Excel</a>
+  </form>
+
+  <table>
+    <tr>
+      <th>Fecha</th>
+      <th>Cliente</th>
+      <th>CUIT/DNI</th>
+      <th>Descripción</th>
+      <th>Importe</th>
+      <th>Pago</th>
+      <th>PDF</th>
+    </tr>
+    {% for f in facturas %}
+    <tr>
+      <td>{{ f.created_at[:16].replace('T', ' ') }}</td>
+      <td>{{ f.cliente_nombre }}</td>
+      <td>{{ f.cliente_cuit }}</td>
+      <td>{{ f.descripcion }}</td>
+      <td>${{ "%.2f"|format(f.importe) }}</td>
+      <td>{{ f.medio_pago }}</td>
+      <td><a href="{{ f.archivo_url }}" target="_blank">📎 Ver PDF</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
